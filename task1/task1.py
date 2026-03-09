@@ -58,41 +58,43 @@ df['home.dest'] = df['home.dest'].fillna(home_mode)
 print("Количество пропущенных значений для каждого столбца в нашем датасете после:")
 print(df.isnull().sum())
 
+train_df, test_df = train_test_split(df, test_size=0.3, random_state=42)
+print(f"Размер обучающей выборки: {len(train_df)}")
+print(f"Размер тестовой выборки: {len(test_df)}")
+
 columns_to_normalize_mm = ['age', 'fare', 'sibsp']
 print("Нормализация MinMaxScaler():")
+scaler_mm = MinMaxScaler()
+train_df[columns_to_normalize_mm] = scaler_mm.fit_transform(train_df[columns_to_normalize_mm])
+print("Train данные после нормализации:")
 for col in columns_to_normalize_mm:
-    print(f"до: мин={df[col].min():.2f}, макс={df[col].max():.2f}")
-scaler = MinMaxScaler()
+    print(f"{col}: мин={train_df[col].min():.2f}, макс={train_df[col].max():.2f}")
+test_df[columns_to_normalize_mm] = scaler_mm.transform(test_df[columns_to_normalize_mm])
+print("Test данные после нормализации:")
 for col in columns_to_normalize_mm:
-    print(f"Нормализуем столбец: {col}")
-    df[col] = scaler.fit_transform(df[[col]])
-    print(f"после: мин={df[col].min():.2f}, макс={df[col].max():.2f}")
+    print(f"{col}: мин={test_df[col].min():.2f}, макс={test_df[col].max():.2f}")
+
 
 columns_to_normalize_st = ['parch', 'body']
 print("Нормализация StandardScaler():")
+scaler_st = StandardScaler()
+train_df[columns_to_normalize_st] = scaler_st.fit_transform(train_df[columns_to_normalize_st])
+print("Train данные после нормализации:")
 for col in columns_to_normalize_st:
-    print(f"до: мин={df[col].min():.2f}, макс={df[col].max():.2f}")
-scaler = StandardScaler()
+    print(f"{col}: среднее={train_df[col].mean():.2f}, стд={train_df[col].std():.2f}")
+test_df[columns_to_normalize_st] = scaler_st.transform(test_df[columns_to_normalize_st])
+print("Test данные после нормализации:")
 for col in columns_to_normalize_st:
-    print(f"Нормализуем столбец: {col}")
-    df[col] = scaler.fit_transform(df[[col]])
-    print(f"после: мин={df[col].min():.2f}, макс={df[col].max():.2f}")
-
+    print(f"{col}: среднее={test_df[col].mean():.2f}, стд={test_df[col].std():.2f}")
 
 categorical_cols = ['sex', 'embarked', 'cabin', 'boat']
 
 print(f"Категориальные столбцы: {categorical_cols}")
-print("\nУникальные значения до преобразования:")
-for col in categorical_cols:
-    print(f"{col}: {df[col].unique()[:5]} (всего {df[col].nunique()})")
-
-df = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
+train_df = pd.get_dummies(train_df, columns=categorical_cols, drop_first=True)
+test_df = pd.get_dummies(test_df, columns=categorical_cols, drop_first=True)
 
 print("\nПосле One-Hot Encoding:")
-print(f"Всего столбцов: {len(df.columns)}")
-
-new_cols = [col for col in df.columns if any(cat in col for cat in ['sex_', 'embarked_', 'cabin_', 'boat_'])]
-print(f"\nСоздано {len(new_cols)} новых столбцов")
-print("Первые 5 строк после преобразования:")
-print(df.head())
-df.to_csv('titanic_final.csv', index=False)
+print(f"Train: {len(train_df.columns)} столбцов")
+print(f"Test: {len(test_df.columns)} столбцов")
+train_df.to_csv('titanic_train.csv', index=False)
+test_df.to_csv('titanic_test.csv', index=False)
