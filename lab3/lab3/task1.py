@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error,root_mean_squared_error
 from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix, roc_curve, roc_auc_score
 import matplotlib.pyplot as plt
 
@@ -17,13 +17,13 @@ dt_reg = DecisionTreeRegressor(max_depth=5, random_state=42)
 dt_reg.fit(X_train_reg, y_train_reg)
 y_pred_reg = dt_reg.predict(X_test_reg)
 
-mse = mean_squared_error(y_test_reg, y_pred_reg)
-mae = mean_absolute_error(y_test_reg, y_pred_reg)
-r2 = r2_score(y_test_reg, y_pred_reg)
+MSE = mean_squared_error(y_test_reg, y_pred_reg)
+RMSE = root_mean_squared_error(y_test_reg, y_pred_reg)
+MAE = mean_absolute_error(y_test_reg, y_pred_reg)
 
-print(f"MSE: {mse:.3f}")
-print(f"MAE: {mae:.3f}")
-print(f"R²: {r2:.3f}")
+print(f"MSE: {MSE:.3f}")
+print(f"RMSE: {RMSE:.3f}")
+print(f"MAE: {MAE:.3f}")
 
 
 df['Passed'] = (df['G3'] >= 10).astype(int)
