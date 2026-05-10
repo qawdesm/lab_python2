@@ -22,7 +22,7 @@ print(f"OOB Accuracy: {rf.oob_score_:.3f}")
 print(f"Accuracy: {accuracy_score(y_test, y_pred_rf):.3f}")
 print(classification_report(y_test, y_pred_rf, target_names=['Не сдал', 'Сдал']))
 
-ada = AdaBoostClassifier(n_estimators=100, random_state=42)
+ada = AdaBoostClassifier(n_estimators=100,learning_rate=0.5,  random_state=42)
 ada.fit(X_train, y_train)
 y_pred_ada = ada.predict(X_test)
 
@@ -30,7 +30,7 @@ print("AdaBoost:")
 print(f"Accuracy: {accuracy_score(y_test, y_pred_ada):.3f}")
 print(classification_report(y_test, y_pred_ada, target_names=['Не сдал', 'Сдал']))
 
-gb = GradientBoostingClassifier(n_estimators=100, random_state=42)
+gb = GradientBoostingClassifier(n_estimators=200, learning_rate=0.1, max_depth=3, random_state=42)
 gb.fit(X_train, y_train)
 y_pred_gb = gb.predict(X_test)
 
@@ -42,8 +42,8 @@ plt.figure(figsize=(8, 6))
 
 for name, scores, color in [
     ('Random Forest', rf.predict_proba(X_test)[:, 1], 'blue'),
-    ('AdaBoost', ada.decision_function(X_test), 'green'),
-    ('Gradient Boosting', gb.decision_function(X_test), 'red')
+    ('AdaBoost', ada.predict_proba(X_test)[:, 1], 'green'),
+    ('Gradient Boosting', gb.predict_proba(X_test)[:, 1], 'red')
 ]:
     fpr, tpr, _ = roc_curve(y_test, scores)
     auc = roc_auc_score(y_test, scores)
